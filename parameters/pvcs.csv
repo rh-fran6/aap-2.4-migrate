@@ -1,0 +1,2 @@
+source_namespace,source_pvc,dest_namespace,dest_pvc,source_path,dest_path,method,controller_name
+source-aap,<controller-backup-claim>,dest-aap,<controller-recovery-claim>,/backups,/backups,tar,controller

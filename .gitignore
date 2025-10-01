@@ -1,0 +1,35 @@
+# Ignore parameter files containing potentially sensitive data
+# Keep the header-only templates tracked
+!parameters/creds.csv
+!parameters/pvcs.csv
+
+# Ignore sensitive/local variants under parameters (but keep the templates above)
+parameters/*.private.csv
+parameters/*.local.csv
+parameters/*.secrets.csv
+parameters/*-private.csv
+parameters/*-secrets.csv
+
+# Ignore root-level sensitive CSVs if present
+/creds.csv
+/pvcs.csv
+/*.private.csv
+/*.secrets.csv
+
+# Script run artifacts and logs
+pvc-migrate-logs-*/
+*.log
+*.tar
+*.tmp
+
+# Common OS/editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
+.idea/
+.vscode/
+
+# Node / tooling caches just in case
+node_modules/

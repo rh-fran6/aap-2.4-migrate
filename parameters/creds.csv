@@ -1,0 +1,3 @@
+label,api_url,token,user,pass,insecure
+source,https://api.source.example:6443,sha256~<source-token>,<source-user>,<source-pass>,false
+destination,https://api.destination.example:6443,sha256~<dest-token>,<dest-user>,<dest-pass>,false
