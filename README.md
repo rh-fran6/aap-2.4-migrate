@@ -31,6 +31,32 @@ Warning: The final cleanup is destructive (deletes both the source backup PVC an
 - Optional: `rsync` (only if you choose the `rsync` copy method; otherwise script defaults to `tar`)
 
 
+## Critical: Restoring to an external PostgreSQL database
+
+If you intend to restore the Automation Controller to an external (unmanaged) PostgreSQL database instead of the in-cluster database, you must pre-create a Secret in the destination AAP namespace before running the restore step. The migration script references this Secret when creating the `AutomationControllerRestore`.
+
+- Secret name expected by the script: `external-restore-postgres-configuration`
+- Namespace: must match your destination namespace (`dest_namespace` / `D_NS`)
+- Sample file to populate: `aap-migrator/postgresql-secret.yaml`
+
+Example:
+
+```bash
+oc -n <dest-namespace> apply -f aap-migrator/postgresql-secret.yaml
+```
+
+Populate the fields in the sample prior to applying:
+
+- `host`, `port`, `database`, `username`, `password`
+- `sslmode` as appropriate for your environment (e.g., `prefer`, `require`)
+- `type: unmanaged`
+
+Notes:
+
+- Ensure the target database exists, is reachable from the cluster, and is empty/owned by the provided user. AAP commonly requires the `pgcrypto` extension.
+- The script sets `spec.postgres_configuration_secret: external-restore-postgres-configuration` on the `AutomationControllerRestore`, directing the operator to use your external DB.
+
+
 ## How it works (high level)
 
 1. Validates logins to source and destination clusters (prompts if not provided via CSV)
@@ -127,6 +153,8 @@ During execution the script may prompt for:
   - `rsync`: uses `oc rsync` source→local→destination (requires `rsync` binary)
 - Size verification: compares source vs destination `du -s` with tolerance; logs a warning if delta exceeds tolerance
 - SELinux relabel: runs `restorecon -Rvv` on destination path if available
+
+- If restoring to an external PostgreSQL, the restore CR includes `postgres_configuration_secret: external-restore-postgres-configuration`, so the pre-created Secret must exist in the destination namespace.
 
 
 ## Destructive cleanup

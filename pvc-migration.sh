@@ -439,6 +439,7 @@ spec:
   deployment_name: ${CONTROLLER_NAME}
   force_drop_db: false
   image_pull_policy: IfNotPresent
+  postgres_configuration_secret: 'external-restore-postgres-configuration'
   no_log: true
   set_self_labels: true
 YAML

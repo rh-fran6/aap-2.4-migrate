@@ -283,6 +283,23 @@ KUBECONFIG="$DST_KC" oc -n "$D_NS" delete pod "$DST_POD" --ignore-not-found
 ```
 
 
+## 7a) Pre-create external PostgreSQL Secret (only if restoring to external DB)
+
+If you will restore into an external (unmanaged) PostgreSQL database, you must pre-create a Secret in the destination namespace before creating the restore CR. The restore will reference this Secret to connect to the external DB.
+
+- Secret name: `external-restore-postgres-configuration`
+- Namespace: destination namespace (`$D_NS`)
+- Sample to populate: `aap-migrator/postgresql-secret.yaml`
+
+Example:
+
+```bash
+oc -n "$D_NS" apply -f aap-migrator/postgresql-secret.yaml
+```
+
+Populate the fields (`host`, `port`, `database`, `username`, `password`, `sslmode`, `type: unmanaged`) with valid values for your environment. Ensure the external DB exists, is reachable, and is empty/owned by the provided user (AAP commonly requires the `pgcrypto` extension).
+
+
 ## 8) Create the AutomationControllerRestore on destination
 
 ```bash
@@ -299,6 +316,7 @@ spec:
   deployment_name: ${CONTROLLER_NAME}
   force_drop_db: false
   image_pull_policy: IfNotPresent
+  postgres_configuration_secret: external-restore-postgres-configuration
   no_log: true
   set_self_labels: true
 YAML
